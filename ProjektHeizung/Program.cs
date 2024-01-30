@@ -19,30 +19,45 @@ class MqttPublisher
 
         await mqttClient.ConnectAsync(options);
 
-        await SendMessagesAsync(mqttClient);
+        CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+        await SendMessagesAsync(mqttClient, cancellationTokenSource.Token);
 
         Console.WriteLine("Drücken Sie eine Taste zum Beenden...");
         Console.ReadLine();
 
+        cancellationTokenSource.Cancel();
         await mqttClient.DisconnectAsync();
     }
 
-    static async Task SendMessagesAsync(IMqttClient mqttClient)
+    //die SendMessagesAsync-Methode wird in einer while-Schleife wiederholt, bis der Nutzer eine Taste drückt und das Programm beendet.
+    static async Task SendMessagesAsync(IMqttClient mqttClient, CancellationToken cancellationToken)
     {
-        var heaterMessage = new
+        while (!cancellationToken.IsCancellationRequested)
         {
-            ID = "H1",
-            Temperatur = "25C"
-        };
+            var heaterMessage = new
+            {
+                ID = "H1",
+                Temperatur = "20C"
+            };
 
-        string jsonMessage = JsonConvert.SerializeObject(heaterMessage);
+            string jsonMessage = JsonConvert.SerializeObject(heaterMessage);
 
-        var message = new MqttApplicationMessageBuilder()
-            .WithTopic("/Heizungen/")
-            .WithPayload(jsonMessage)
-            .WithExactlyOnceQoS()
-            .Build();
+            var message = new MqttApplicationMessageBuilder()
+                .WithTopic("/Heizungen/")
+                .WithPayload(jsonMessage)
+                .WithExactlyOnceQoS()
+                .Build();
 
-        await mqttClient.PublishAsync(message);
+            await mqttClient.PublishAsync(message);
+
+            try
+            {
+                await Task.Delay(TimeSpan.FromSeconds(10), cancellationToken);
+            }
+            catch (TaskCanceledException)
+            {
+                break;
+            }
+        }
     }
 }
