@@ -98,24 +98,28 @@ namespace ProjektAmpel
                     try
                     {
                         var exist = shape.CellExistsU["Prop.Heizungen", 0];
-                        if (exist !=0)
+                        if (exist != 0)
                         {
-                            string heaterValue = shape.CellsU["Prop.Heizungen"].ResultStrU[Visio.VisUnitCodes.visNoCast];
-                            if (heaterValue == heaterData.ID)
+                            string heaterID = shape.CellsU["Prop.Heizungen"].ResultStrU[Visio.VisUnitCodes.visNoCast];
+                            if (heaterID == heaterData.ID)
                             {
-
-                                    var exist1 = shape.CellExistsU["Prop.Temperatur", 0];
-                                    if (exist1 != 0)
-
+                                // IstTemperatur aktualisieren
+                                var existIstTemp = shape.CellExistsU["Prop.IstTemperatur", 0];
+                                if (existIstTemp != 0)
                                 {
-                                    Debug.WriteLine($"Setze 'Prop.Temperatur' auf: {heaterData.Temperatur}");
-                                    shape.CellsU["Prop.Temperatur"].FormulaU = $"\"{heaterData.Temperatur}\"";
-                                    break; // Shape gefunden und aktualisiert, Schleife verlassen
+                                    Debug.WriteLine($"Setze 'Prop.IstTemperatur' auf: {heaterData.IstTemperatur}");
+                                    shape.CellsU["Prop.IstTemperatur"].FormulaU = $"\"{heaterData.IstTemperatur}\"";
                                 }
-                                else
+
+                                // SollTemperatur aktualisieren
+                                var existSollTemp = shape.CellExistsU["Prop.SollTemperatur", 0];
+                                if (existSollTemp != 0)
                                 {
-                                    Debug.WriteLine($"Shape mit 'Prop.Heizungen' = '{heaterData.ID}' gefunden, aber es hat keine 'Prop.Temperatur' Eigenschaft.");
+                                    Debug.WriteLine($"Setze 'Prop.SollTemperatur' auf: {heaterData.SollTemperatur}");
+                                    shape.CellsU["Prop.SollTemperatur"].FormulaU = $"\"{heaterData.SollTemperatur}\"";
                                 }
+
+                                break; // Shape gefunden und aktualisiert, Schleife verlassen
                             }
                         }
                     }
@@ -139,10 +143,9 @@ namespace ProjektAmpel
         public class HeaterData
         {
             public string ID { get; set; }
-            public string Temperatur { get; set; }
+            public string IstTemperatur { get; set; }
+            public string SollTemperatur { get; set; }
         }
-
-
 
         private void ThisAddIn_Shutdown(object sender, EventArgs e)
         {
