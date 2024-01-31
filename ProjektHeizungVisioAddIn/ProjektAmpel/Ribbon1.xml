@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<customUI xmlns="http://schemas.microsoft.com/office/2009/07/customui" onLoad="Ribbon_Load">
+	<ribbon>
+		<tabs>
+			<tab id="CustomTab" label="MQTT-Broker">
+				<!-- Label für das Tab geändert zu "MQTT-Broker" -->
+				<group id="MyGroup" label="Verbindung">
+					<!-- Label für die Gruppe geändert zu "Verbindung" -->
+					<button id="ConnectButton"
+							label="Verbinden ✔️"
+							onAction="OnConnectButtonClick"
+							imageMso="AccessFormAdd"
+							size="large"/>
+					<button id="DisconnectButton"
+							label="Trennen ❌"
+							onAction="OnDisconnectButtonClick"
+							imageMso="AccessFormDelete"
+							size="large"/>
+				</group>
+			</tab>
+		</tabs>
+	</ribbon>
+</customUI>

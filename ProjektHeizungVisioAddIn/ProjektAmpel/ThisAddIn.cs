@@ -19,6 +19,7 @@ using Microsoft.Office.Tools.Ribbon;
 using Microsoft.Office.Tools;
 using System.Diagnostics;
 using Newtonsoft.Json;
+using MQTTnet.Client.Options;
 
 namespace ProjektAmpel
 {
@@ -26,39 +27,47 @@ namespace ProjektAmpel
     {
         private IMqttClient mqttClient;
 
-        private async void ThisAddIn_Startup(object sender, EventArgs e)
+        private void ThisAddIn_Startup(object sender, EventArgs e)
         {
-            var Server = "localhost";
-            int Port = 1883;
+            Visio.Application visioApp = Globals.ThisAddIn.Application;
+            visioApp.Documents.Open("C:\\Users\\maxim.schmidt\\Documents\\Zeichnung3.vsdm");
+        }
 
+        protected override Office.IRibbonExtensibility CreateRibbonExtensibilityObject()
+        {
+            return new Ribbon1();
+        }
+
+        public async Task ConnectToBroker()
+        {
             try
             {
                 // Broker-Verbindung konfigurieren
                 var factory = new MqttFactory();
                 mqttClient = factory.CreateMqttClient();
 
-                var options = new MQTTnet.Client.Options.MqttClientOptionsBuilder()
-                    .WithTcpServer(Server, Port)
+                var options = new MqttClientOptionsBuilder()
+                    .WithTcpServer("localhost", 1883)
                     .Build();
 
                 await mqttClient.ConnectAsync(options);
-
-                // Themen abonnieren
                 await mqttClient.SubscribeAsync(new MqttTopicFilterBuilder().WithTopic("/Heizungen/#").Build());
                 mqttClient.UseApplicationMessageReceivedHandler(HandleReceivedMessage);
-
-
-                Visio.Application visioApp = Globals.ThisAddIn.Application;
-                visioApp.Documents.Open("C:\\Users\\maxim.schmidt\\Documents\\Zeichnung3.vsdm");
-
             }
             catch (Exception ex)
             {
                 Debug.WriteLine(ex);
             }
-
-
         }
+
+        public async Task DisconnectFromBroker()
+        {
+            if (mqttClient != null)
+            {
+                await mqttClient.DisconnectAsync();
+            }
+        }
+
 
         private void HandleReceivedMessage(MqttApplicationMessageReceivedEventArgs e)
         {
@@ -107,7 +116,6 @@ namespace ProjektAmpel
                                 var existIstTemp = shape.CellExistsU["Prop.IstTemperatur", 0];
                                 if (existIstTemp != 0)
                                 {
-                                    Debug.WriteLine($"Setze 'Prop.IstTemperatur' auf: {heaterData.IstTemperatur}");
                                     shape.CellsU["Prop.IstTemperatur"].FormulaU = $"\"{heaterData.IstTemperatur}\"";
                                 }
 
@@ -115,7 +123,6 @@ namespace ProjektAmpel
                                 var existSollTemp = shape.CellExistsU["Prop.SollTemperatur", 0];
                                 if (existSollTemp != 0)
                                 {
-                                    Debug.WriteLine($"Setze 'Prop.SollTemperatur' auf: {heaterData.SollTemperatur}");
                                     shape.CellsU["Prop.SollTemperatur"].FormulaU = $"\"{heaterData.SollTemperatur}\"";
                                 }
 

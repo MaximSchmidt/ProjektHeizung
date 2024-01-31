@@ -1,0 +1,12 @@
+<customUI xmlns="http://schemas.microsoft.com/office/2009/07/customui">
+	<ribbon>
+		<tabs>
+			<tab id="CustomTab" label="ConnectToBroker">
+				<group id="ConnectionGroup" label="MQTT Verbindung">
+					<button id="ConnectButton" label="Verbinden" onAction="OnConnectClick"/>
+					<button id="DisconnectButton" label="Trennen" onAction="OnDisconnectClick"/>
+				</group>
+			</tab>
+		</tabs>
+	</ribbon>
+</customUI>
