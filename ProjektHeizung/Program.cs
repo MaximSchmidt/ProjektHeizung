@@ -32,29 +32,34 @@ class MqttPublisher
     //die SendMessagesAsync-Methode wird in einer while-Schleife wiederholt, bis der Nutzer eine Taste drückt und das Programm beendet.
     static async Task SendMessagesAsync(IMqttClient mqttClient, CancellationToken cancellationToken)
     {
-        Random random = new Random(); // Erstellen eines Random-Objekts
+        Random random = new Random();
+
+        string[] heaterIds = { "H1", "H2", "H3", "H4", "H5", "H6", "H7", "H8", "H9", "H10" };
 
         while (!cancellationToken.IsCancellationRequested)
         {
-            int istTemperatur = random.Next(15, 26); // Generiert eine zufällige Ist-Temperatur zwischen 15°C und 25°C
-            int sollTemperatur = random.Next(15, 26); // Generiert eine zufällige Soll-Temperatur zwischen 15°C und 25°C
-
-            var heaterMessage = new
+            foreach (var heaterId in heaterIds)
             {
-                ID = "H1",
-                IstTemperatur = $"{istTemperatur}C",
-                SollTemperatur = $"{sollTemperatur}C"
-            };
+                int istTemperatur = random.Next(15, 26);
+                int sollTemperatur = random.Next(15, 26);
 
-            string jsonMessage = JsonConvert.SerializeObject(heaterMessage);
+                var heaterMessage = new
+                {
+                    ID = heaterId,
+                    IstTemperatur = $"{istTemperatur}C",
+                    SollTemperatur = $"{sollTemperatur}C"
+                };
 
-            var message = new MqttApplicationMessageBuilder()
-                .WithTopic("/Heizungen/")
-                .WithPayload(jsonMessage)
-                .WithExactlyOnceQoS()
-                .Build();
+                string jsonMessage = JsonConvert.SerializeObject(heaterMessage);
 
-            await mqttClient.PublishAsync(message);
+                var message = new MqttApplicationMessageBuilder()
+                    .WithTopic($"/Heizungen/{heaterId}")
+                    .WithPayload(jsonMessage)
+                    .WithExactlyOnceQoS()
+                    .Build();
+
+                await mqttClient.PublishAsync(message);
+            }
 
             try
             {

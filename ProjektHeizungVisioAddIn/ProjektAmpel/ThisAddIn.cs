@@ -44,7 +44,7 @@ namespace ProjektAmpel
                 await mqttClient.ConnectAsync(options);
 
                 // Themen abonnieren
-                await mqttClient.SubscribeAsync(new MqttTopicFilterBuilder().WithTopic("/Heizungen/").Build());
+                await mqttClient.SubscribeAsync(new MqttTopicFilterBuilder().WithTopic("/Heizungen/#").Build());
                 mqttClient.UseApplicationMessageReceivedHandler(HandleReceivedMessage);
 
 
