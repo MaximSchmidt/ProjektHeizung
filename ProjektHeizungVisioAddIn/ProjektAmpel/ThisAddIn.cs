@@ -51,7 +51,7 @@ namespace ProjektAmpel
                     .Build();
 
                 await mqttClient.ConnectAsync(options);
-                await mqttClient.SubscribeAsync(new MqttTopicFilterBuilder().WithTopic("/Heizungen/#").Build());
+                await mqttClient.SubscribeAsync(new MqttTopicFilterBuilder().WithTopic("home/climate/entwicklung").Build());
                 mqttClient.UseApplicationMessageReceivedHandler(HandleReceivedMessage);
             }
             catch (Exception ex)
