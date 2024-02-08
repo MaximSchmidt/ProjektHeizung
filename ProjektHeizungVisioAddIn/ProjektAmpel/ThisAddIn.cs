@@ -101,40 +101,8 @@ namespace ProjektAmpel
             try
             {
                 var heaterData = JsonConvert.DeserializeObject<HeaterData>(messagePayload);
-
-                foreach (Visio.Shape shape in page.Shapes)
-                {
-                    try
-                    {
-                        var exist = shape.CellExistsU["Prop.Heizungen", 0];
-                        if (exist != 0)
-                        {
-                            string heaterID = shape.CellsU["Prop.Heizungen"].ResultStrU[Visio.VisUnitCodes.visNoCast];
-                            if (heaterID == heaterData.ID)
-                            {
-                                // IstTemperatur aktualisieren
-                                var existIstTemp = shape.CellExistsU["Prop.IstTemperatur", 0];
-                                if (existIstTemp != 0)
-                                {
-                                    shape.CellsU["Prop.IstTemperatur"].FormulaU = $"\"{heaterData.IstTemperatur}\"";
-                                }
-
-                                // SollTemperatur aktualisieren
-                                var existSollTemp = shape.CellExistsU["Prop.SollTemperatur", 0];
-                                if (existSollTemp != 0)
-                                {
-                                    shape.CellsU["Prop.SollTemperatur"].FormulaU = $"\"{heaterData.SollTemperatur}\"";
-                                }
-
-                                break; // Shape gefunden und aktualisiert, Schleife verlassen
-                            }
-                        }
-                    }
-                    catch (COMException comEx)
-                    {
-                        Debug.WriteLine($"COMException beim Zugriff auf die Zellen des Shapes: {comEx.Message}");
-                    }
-                }
+                // Erweitern Sie hier Ihren Code, um die spezifischen Werte anzuzeigen
+                DisplayJsonInShape(page, messagePayload);
             }
             catch (JsonException jsonEx)
             {
@@ -143,6 +111,18 @@ namespace ProjektAmpel
             catch (Exception ex)
             {
                 Debug.WriteLine("Allgemeiner Fehler: " + ex.Message);
+            }
+        }
+
+        private void DisplayJsonInShape(Visio.Page page, string jsonString)
+        {
+            foreach (Visio.Shape shape in page.Shapes)
+            {
+                if (shape.NameU == "Sheet.44") 
+                {
+                    shape.Text = jsonString;
+                    break;
+                }
             }
         }
 
