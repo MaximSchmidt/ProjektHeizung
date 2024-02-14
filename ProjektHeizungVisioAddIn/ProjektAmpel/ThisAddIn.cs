@@ -90,36 +90,25 @@ namespace ProjektAmpel
         {
             string messagePayload = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
             Visio.Application visioApp = Globals.ThisAddIn.Application;
-            if (visioApp == null)
+            if (visioApp == null || visioApp.ActiveDocument == null)
             {
-                Debug.WriteLine("Visio-Application-Objekt ist null");
+                Debug.WriteLine("Visio-Application-Objekt ist null oder kein aktives Dokument");
                 return;
             }
 
-            Visio.Document activeDocument = visioApp.ActiveDocument;
-            if (activeDocument == null)
+            // Verwenden Sie das aktive Dokument, anstatt nach "Zeichenblatt-1" zu suchen
+            Visio.Page activePage = visioApp.ActivePage;
+            if (activePage == null)
             {
-                Debug.WriteLine("Kein aktives Dokument");
+                Debug.WriteLine("Keine aktive Seite gefunden");
                 return;
             }
 
-            Visio.Page page;
-            try
-            {
-                page = activeDocument.Pages["Zeichenblatt-1"];
-            }
-            catch (Exception)
-            {
-                Debug.WriteLine("Seite nicht gefunden");
-                return;
-            }
-
-            // JSON-Nachricht deserialisieren
             try
             {
                 var heaterData = JsonConvert.DeserializeObject<HeaterData>(messagePayload);
-                // Erweitern Sie hier Ihren Code, um die spezifischen Werte anzuzeigen
-                DisplayJsonInShape(page, messagePayload);
+                Visio.Shape shape = GetOrCreateShape(activePage, "HeizungShape");
+                shape.Text = messagePayload; // Aktualisiert das Shape mit dem JSON-String
             }
             catch (JsonException jsonEx)
             {
@@ -131,17 +120,23 @@ namespace ProjektAmpel
             }
         }
 
-        private void DisplayJsonInShape(Visio.Page page, string jsonString)
+        private Visio.Shape GetOrCreateShape(Visio.Page page, string shapeName)
         {
             foreach (Visio.Shape shape in page.Shapes)
             {
-                if (shape.NameU == "Sheet.44") 
+                if (shape.NameU == shapeName)
                 {
-                    shape.Text = jsonString;
-                    break;
+                    return shape; // Shape gefunden
                 }
             }
+
+            // Shape nicht gefunden, also neues Shape erstellen
+            Visio.Shape newShape = page.DrawRectangle(1, 1, 2, 2); // Beispielposition und -größe
+            newShape.NameU = shapeName;
+            return newShape;
         }
+
+
 
         // Hilfsklasse zur Deserialisierung der JSON-Daten
         public class HeaterData
