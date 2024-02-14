@@ -1,12 +1,12 @@
-# Heizungsprojekt
+ï»¿# Heizungsprojekt
 
-App zur Überwachung und Steuerung von Heizungsgerät-Daten in Microsoft Visio
+App zur Ãœberwachung und Steuerung von HeizungsgerÃ¤t-Daten in Microsoft Visio
 
 ## 1. Description
 
-Dieses Projekt implementiert ein intelligentes Heizungssystem, das die Steuerung und Überwachung von Heizgerät-Daten über ein MQTT-Broker ermöglicht. Das System nutzt einen MQTT-Broker für die Kommunikation zwischen einem Visio-basierten Frontend und einem Home Assistenten der einen FritzBox Router integriert.
+Dieses Projekt implementiert ein intelligentes Heizungssystem, das die Steuerung und Ãœberwachung von HeizgerÃ¤t-Daten Ã¼ber ein MQTT-Broker ermÃ¶glicht. Das System nutzt einen MQTT-Broker fÃ¼r die Kommunikation zwischen einem Visio-basierten Frontend und einem Home Assistenten der einen FritzBox Router integriert.
 
-![Heizungssystem-Übersicht](HeizungsProjekt.png)
+![Heizungssystem-Ãœbersicht](HeizungsProjekt.png)
 
 ## 2. Getting Started
 
@@ -53,7 +53,7 @@ For more Info, please refer to the offical Home Assistent Guide on Docker: https
 ### Step 4: Integrate AVM FRITZ!SmartHome with Home Assistent:
 
 1. Navigate in the Home Assistent Interface to "Einstellungen"
-2. Navigate to "Geräte und Dienste"
+2. Navigate to "GerÃ¤te und Dienste"
 3. Add Integration "AVM FRITZ!SmartHome"
 4. Login with your FritzBox Username and Password
 
@@ -63,7 +63,7 @@ For more Info, please refer to the offical Home Assistent Guide on Docker: https
 ### Step 5: Integrate MQTT Broker with Home Assistent:
 
 1. Navigate in the Home Assistent Interface to "Einstellungen"
-2. Navigate to "Geräte und Dienste"
+2. Navigate to "GerÃ¤te und Dienste"
 3. Add Integration "MQTT"
 4. Login with your MQTT Username and Password
 
@@ -74,12 +74,17 @@ For more Info, please refer to the offical Home Assistent Guide on Docker: https
 
 ### Step 6: Add VSTO-Addin to Visio
 
-1. Open 
-2. 
+1. Execute "setup.exe" in the Release Notes
 
-### 2.3. Executing program
+### Step 7: Connect Visio to MQTT Broker
+
+1. Select in the Ribbon (MenÃ¼band) the "MQTT-Broker" Tab
+2. Press "Verbinden"
+
+# Your Done âœ…
 
 
+## 3. Help
 
 ## 4. Authors
 
@@ -102,5 +107,4 @@ This project is licensed under the [MIT] License - see the LICENSE.md file for d
 
 ## 7. Acknowledgments
 
-Inspiration, code snippets, etc.
-* [awesome-readme](https://github.com/matiassingers/awesome-readme)
+* [Repository V1](https://github.com/MaximSchmidt/ProjektHeizung)
