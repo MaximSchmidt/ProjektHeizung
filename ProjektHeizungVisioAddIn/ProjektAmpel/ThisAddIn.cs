@@ -30,7 +30,24 @@ namespace ProjektAmpel
         private void ThisAddIn_Startup(object sender, EventArgs e)
         {
             Visio.Application visioApp = Globals.ThisAddIn.Application;
-            visioApp.Documents.Open("C:\\Users\\maxim.schmidt\\Documents\\Zeichnung3.vsdm");
+            string folderPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            string fileName = "Heizung.vsdm";
+            string filePath = System.IO.Path.Combine(folderPath, fileName);
+
+            // Überprüfen, ob die Datei bereits existiert
+            if (System.IO.File.Exists(filePath))
+            {
+                // Öffnet das vorhandene Dokument
+                visioApp.Documents.Open(filePath);
+            }
+            else
+            {
+                // Erstellt ein neues Dokument, wenn es nicht existiert
+                visioApp.Documents.Add("");
+                // Optional: Speichern des neuen Dokuments
+                Visio.Document newDoc = visioApp.ActiveDocument;
+                newDoc.SaveAs(filePath);
+            }
         }
 
         protected override Office.IRibbonExtensibility CreateRibbonExtensibilityObject()
