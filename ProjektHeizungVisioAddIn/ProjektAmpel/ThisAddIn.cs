@@ -55,27 +55,44 @@ namespace ProjektAmpel
             return new Ribbon1();
         }
 
-        public async Task ConnectToBroker()
+
+    public async Task ConnectToBroker()
+    {
+        try
         {
-            try
+            using (var brokerConnectForm = new BrokerConnectForm())
             {
-                // Broker-Verbindung konfigurieren
-                var factory = new MqttFactory();
-                mqttClient = factory.CreateMqttClient();
+                // Zeigt das Broker-Verbindungsdialogfenster an
+                var result = brokerConnectForm.ShowDialog();
+            
+                if (result == DialogResult.OK)
+                {
+                    // Holt die eingegebene Broker-Adresse
+                    string brokerAddress = brokerConnectForm.BrokerAddress;
 
-                var options = new MqttClientOptionsBuilder()
-                    .WithTcpServer("localhost", 1883)
-                    .Build();
+                    // Broker-Verbindung konfigurieren mit der eingegebenen Adresse
+                    var factory = new MqttFactory();
+                    mqttClient = factory.CreateMqttClient();
 
-                await mqttClient.ConnectAsync(options);
-                await mqttClient.SubscribeAsync(new MqttTopicFilterBuilder().WithTopic("home/climate/entwicklung").Build());
-                mqttClient.UseApplicationMessageReceivedHandler(HandleReceivedMessage);
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex);
+                    var options = new MqttClientOptionsBuilder()
+                        .WithTcpServer(brokerAddress) // Verwendet die eingegebene IP-Adresse
+                        .Build();
+
+                    await mqttClient.ConnectAsync(options);
+                    await mqttClient.SubscribeAsync(new MqttTopicFilterBuilder().WithTopic("home/climate/entwicklung").Build());
+                    mqttClient.UseApplicationMessageReceivedHandler(HandleReceivedMessage);
+
+                    MessageBox.Show($"Connected to Broker at {brokerAddress}", "Connection Successful", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
             }
         }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error connecting to broker: {ex.Message}");
+            MessageBox.Show($"Error connecting to broker: {ex.Message}", "Connection Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+
 
         public async Task DisconnectFromBroker()
         {
